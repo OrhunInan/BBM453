@@ -13,12 +13,21 @@ def parse_message(input_string):
     match input_string[1]:
         case "SERVING":
             peer_list[int(input_string[2])] = [] # empty list will be filled with available files after
+            return None
         
         case "PROVIDING":
             peer_port = int(input_string[2])
             serve_list = [input_string[3 + i] for i in int(input_string[3])]
 
             peer_list[peer_port] = serve_list
+
+            return None
+
+        case "SEARCH":
+                return [
+                port for port, file_list in peer_list.items() 
+                if input_string[2] in file_list
+                ]
 
     """
     while True:
