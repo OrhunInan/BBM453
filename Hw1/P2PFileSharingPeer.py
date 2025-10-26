@@ -5,7 +5,7 @@ import sys
 
 # macros
 CLIENT_IP = sys.argv[1]
-CLIENT_PORT = sys.argv[2]
+CLIENT_PORT = int(sys.argv[2])
 REPOSITORY_PATH = sys.argv[3]
 SCHEDULE = sys.argv[4]
 
@@ -43,12 +43,10 @@ def start_server():
     Set up the server part of the peer
     Use '0.0.0.0' to listen on all available network interfaces
     """
-    host = sys.argv[1]
-    port = int(sys.argv[2])
 
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((host, port))
-    server_socket.listen(5) # Listen for up to 5 incoming connections
+    server_socket.bind((CLIENT_IP, CLIENT_PORT))
+    server_socket.listen()
 
     return server_socket
 
