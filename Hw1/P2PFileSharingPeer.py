@@ -45,9 +45,6 @@ def start_reciever_thread(target, server_socket):
     he server thread will handle incoming messages in the background.
     'daemon=True' ensures the thread will close when the main program exits.
     """
-
-    receiver_thread = threading.Thread(target=target, args=(server_socket,), daemon=True)
-    receiver_thread.start()
     log("You can now send messages to other peers.")    
 
 def send_message(dest_ip, dest_port, message_to_send):
@@ -80,3 +77,4 @@ client_socket.send(f"START PROVIDING {client_port} 1 a.dat END".encode())
 print(f"START SEARCH a.dat END")
 client_socket.send(f"START SEARCH a.dat END".encode())
 print(client_socket.recv(10240).decode())
+client_socket.close()
