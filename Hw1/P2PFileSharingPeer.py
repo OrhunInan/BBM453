@@ -4,10 +4,11 @@ import threading
 import sys
 
 # macros
-CLIENT_IP = sys.argv[1]
-CLIENT_PORT = int(sys.argv[2])
+MAIN_SERVER_IP = sys.argv[1]
+MAIN_SERVER_PORT = int(sys.argv[2])
 REPOSITORY_PATH = sys.argv[3]
 SCHEDULE = sys.argv[4]
+
 
 def log(str=None):
     """
@@ -38,18 +39,6 @@ def receive_messages(server_socket):
             log(f"Error receiving message: {e}")
             break
 
-def start_server():
-    """
-    Set up the server part of the peer
-    Use '0.0.0.0' to listen on all available network interfaces
-    """
-
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((CLIENT_IP, CLIENT_PORT))
-    server_socket.listen()
-
-    return server_socket
-
 def start_reciever_thread(target, server_socket):
     """
     Start the server thread
@@ -61,12 +50,7 @@ def start_reciever_thread(target, server_socket):
     receiver_thread.start()
     log("You can now send messages to other peers.")    
 
-def send_message():
-    # Get the destination peer's information from the user
-    dest_ip = input("Enter destination IP (e.g., 127.0.0.1): ")
-    dest_port = int(input("Enter destination port: "))
-    message_to_send = input("Enter your message: ")
-
+def send_message(dest_ip, dest_port, message_to_send):
     # Create a *new* socket to send the message (acting as a client)
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
@@ -80,14 +64,19 @@ def send_message():
     client_socket.close()
     log("Message sent! ✔️")
 
-server_socket = start_server()
-start_reciever_thread(receive_messages, server_socket)
 
-# 3. Handle sending messages in a loop
-while True:
-    try:
-        send_message()
-    except ConnectionRefusedError:
-        log("❌ Connection refused. Make sure the destination peer is running and the IP/port are correct.")
-    except Exception as e:
-        log(f"An error occurred: {e}")
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.bind(("", 0))
+
+client_port = client_socket.getsockname()[1]
+
+client_socket.connect((MAIN_SERVER_IP, MAIN_SERVER_PORT))
+
+
+print(f"START SERVING {client_port} END")
+client_socket.send(f"START SERVING {client_port} END".encode())
+print(f"START PROVIDING {client_port} 1 a.dat END")
+client_socket.send(f"START PROVIDING {client_port} 1 a.dat END".encode())
+print(f"START SEARCH a.dat END")
+client_socket.send(f"START SEARCH a.dat END".encode())
+print(client_socket.recv(10240).decode())
