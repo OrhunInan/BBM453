@@ -1,21 +1,23 @@
-"""
-sys.argv[1] = ip
-sys.argv[2] = port
-"""
 
-
-# p2p_chat.py
 import socket
 import threading
 import sys
 
-def append_log(str=None):
+# macros
+CLIENT_IP = sys.argv[1]
+CLIENT_PORT = sys.argv[2]
+REPOSITORY_PATH = sys.argv[3]
+SCHEDULE = sys.argv[4]
+
+def log(str=None):
     """
     Log function is defined at the pdf, I'm just lazy AF 
     """
     print("We need to define log function")
     if str != None:
         print(str)
+
+##TODO basically every line beloww this comment is useless, however code below will stay as an example usage of threads and sockets until we implement them.
 
 # --- SERVER LOGIC (runs in a separate thread) ---
 # This function will run in a separate thread to handle incoming messages.
@@ -30,10 +32,10 @@ def receive_messages(server_socket):
             # Receive the message from the peer
             message = connection_socket.recv(1024).decode()
             if message:
-                append_log(message)
+                log(message)
             connection_socket.close()
         except Exception as e:
-            append_log(f"Error receiving message: {e}")
+            log(f"Error receiving message: {e}")
             break
 
 def start_server():
@@ -59,7 +61,7 @@ def start_reciever_thread(target, server_socket):
 
     receiver_thread = threading.Thread(target=target, args=(server_socket,), daemon=True)
     receiver_thread.start()
-    append_log("You can now send messages to other peers.")    
+    log("You can now send messages to other peers.")    
 
 def send_message():
     # Get the destination peer's information from the user
@@ -78,7 +80,7 @@ def send_message():
     
     # Close the connection for this message
     client_socket.close()
-    append_log("Message sent! ✔️")
+    log("Message sent! ✔️")
 
 server_socket = start_server()
 start_reciever_thread(receive_messages, server_socket)
@@ -88,6 +90,6 @@ while True:
     try:
         send_message()
     except ConnectionRefusedError:
-        append_log("❌ Connection refused. Make sure the destination peer is running and the IP/port are correct.")
+        log("❌ Connection refused. Make sure the destination peer is running and the IP/port are correct.")
     except Exception as e:
-        append_log(f"An error occurred: {e}")
+        log(f"An error occurred: {e}")
