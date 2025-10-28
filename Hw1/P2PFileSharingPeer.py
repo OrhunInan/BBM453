@@ -182,13 +182,17 @@ def handle_peer_request(conn, addr):
         conn.close()
 
 
-def peer_server(port):
+def peer_server():
+    global client_port
     """Server thread to handle incoming requests from other peers"""
     server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_sock.bind(('127.0.0.1', port))
+    #server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_sock.bind(('127.0.0.1', 0))
+    client_port = server_sock.getsockname()[1]
+
+
     server_sock.listen(5)
-    print(f"Peer server listening on port {port}")
+    print(f"Peer server listening on port {client_port}")
     
     while True:
         try:
@@ -227,10 +231,10 @@ def main():
     # Create socket and bind to get port
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.bind(("", 0))
-    client_port = client_socket.getsockname()[1]
+    #client_port = client_socket.getsockname()[1]
     
     # Start peer server thread
-    server_thread = threading.Thread(target=peer_server, args=(client_port,), daemon=True)
+    server_thread = threading.Thread(target=peer_server, args=(), daemon=True)
     server_thread.start()
     
     # Connect to main server
