@@ -146,6 +146,7 @@ def download_file_parallel(providers, filename, file_size):
                 for chunk in chunks:
                     f.write(chunk)
         print(f"Successfully downloaded {filename}")
+        get_local_files()
         return True
     else:
         print(f"Failed to download {filename}")
